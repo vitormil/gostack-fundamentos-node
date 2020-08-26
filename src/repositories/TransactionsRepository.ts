@@ -24,18 +24,21 @@ class TransactionsRepository {
   }
 
   public getBalance(): Balance {
-    const incomes: number = this.transactions
-      .map(t => (t.type === 'income' ? t.value : 0))
-      .reduce((total, num) => total + num);
+    const balance = this.transactions.reduce(
+      (accumulator, transaction: Transaction) => {
+        accumulator[transaction.type] += transaction.value;
 
-    const outcomes: number = this.transactions
-      .map(t => (t.type === 'outcome' ? t.value : 0))
-      .reduce((total, num) => total + num);
+        return accumulator;
+      },
+      {
+        income: 0,
+        outcome: 0,
+      },
+    );
 
     return {
-      income: incomes,
-      outcome: outcomes,
-      total: incomes - outcomes,
+      ...balance,
+      total: balance.income - balance.outcome,
     };
   }
 
